@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import ReviewCard from '../components/ui/ReviewCard';
-import { ShieldAlert, AlertTriangle } from 'lucide-react';
+import { ShieldAlert, AlertTriangle, Terminal, ChevronUp, ChevronDown } from 'lucide-react';
 import { API_ENDPOINTS } from '../api/config';
 import { useEvents } from '../context/EventContext';
 
@@ -25,7 +25,7 @@ export default function ReviewQueue({ onSearchUser }) {
       return;
     }
     
-    if (processingIds.has(trace_id)) return; // Prevent duplicate clicks
+    if (processingIds.has(trace_id)) return;
 
     setProcessingIds(prev => new Set(prev).add(trace_id));
     setError(null);
@@ -36,16 +36,11 @@ export default function ReviewQueue({ onSearchUser }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ trace_id, action })
       });
-      if (!res.ok) {
-        throw new Error('API request failed');
-      }
-      // Success!
-      // The event will be removed from `items` automatically via SSE
+      if (!res.ok) throw new Error('API request failed');
     } catch (err) {
       console.error("Failed to process review action", err);
-      setError(`Failed to process action for event ${trace_id.substring(0,8)}. Please retry.`);
+      setError(`Failed to process action for event ${trace_id.substring(0,8)}.`);
     } finally {
-      // Remove from processing lock
       setProcessingIds(prev => {
         const next = new Set(prev);
         next.delete(trace_id);
@@ -57,7 +52,6 @@ export default function ReviewQueue({ onSearchUser }) {
   const simulateEvent = async () => {
     await fetch(API_ENDPOINTS.SIMULATE_REVIEW, { method: 'POST' });
   };
-
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -77,42 +71,41 @@ export default function ReviewQueue({ onSearchUser }) {
   }, [items, activeIndex]);
 
   return (
-    <div style={{ padding: '20px', maxWidth: '1000px', margin: '0 auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
+    <div style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h1 style={{ fontSize: '24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <ShieldAlert color="#ff3b8f" /> REVIEW QUEUE
+          <h1 style={{ fontSize: '20px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '10px', letterSpacing: '-0.01em' }}>
+            <ShieldAlert color="var(--accent-primary)" size={20} /> Review Queue
           </h1>
-          <p style={{ color: '#94a3b8', fontSize: '14px' }}>Human-in-the-loop verification required</p>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '13px', marginTop: '2px' }}>Manual verification for low-confidence face matches</p>
         </div>
-        <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
           <button 
             onClick={simulateEvent}
-            style={{ backgroundColor: '#1e293b', border: 'none', color: '#64748b', padding: '8px 16px', borderRadius: '6px', fontSize: '11px', cursor: 'pointer' }}
+            style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', color: 'var(--text-secondary)', padding: '6px 12px', borderRadius: 'var(--radius-sm)', fontSize: '11px', fontWeight: '500', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
           >
-            [DEV] PUSH TO QUEUE
+            <Terminal size={13} color="var(--text-muted)" /> Simulate Review Event
           </button>
-          <div style={{ textAlign: 'right' }}>
-            <span style={{ fontSize: '32px', fontWeight: 'bold' }}>{items.length}</span>
-            <p style={{ color: '#94a3b8', fontSize: '12px' }}>PENDING</p>
+          <div style={{ textAlign: 'right', display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+            <span style={{ fontSize: '20px', fontWeight: '700', fontFamily: "'JetBrains Mono', monospace" }}>{items.length}</span>
+            <span style={{ color: 'var(--text-muted)', fontSize: '11px', fontWeight: '600', letterSpacing: '0.05em' }}>PENDING</span>
           </div>
         </div>
       </div>
 
-
       {error && (
-        <div style={{ backgroundColor: '#7f1d1d', color: '#fca5a5', padding: '12px 16px', borderRadius: '6px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <AlertTriangle size={20} />
+        <div style={{ backgroundColor: 'var(--danger-bg)', color: 'var(--danger)', border: '1px solid var(--danger-border)', padding: '10px 14px', borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px' }}>
+          <AlertTriangle size={16} />
           <span>{error}</span>
         </div>
       )}
 
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         {items.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '100px', color: '#64748b' }}>
-            <ShieldAlert size={48} style={{ marginBottom: '20px', opacity: 0.2 }} />
-            <h3>QUEUE CLEAR</h3>
-            <p>All items have been processed.</p>
+          <div className="card" style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--text-muted)' }}>
+            <ShieldAlert size={40} style={{ marginBottom: '12px', opacity: 0.3, color: 'var(--accent-primary)' }} />
+            <h3 style={{ fontSize: '14px', fontWeight: '600', color: 'var(--text-primary)' }}>Queue Clear</h3>
+            <p style={{ fontSize: '12px', marginTop: '4px' }}>All access review items have been resolved.</p>
           </div>
         ) : (
           items.map((item, index) => (
@@ -131,23 +124,25 @@ export default function ReviewQueue({ onSearchUser }) {
 
       {/* Shortcuts Legend */}
       <div style={{ 
-        position: 'fixed', 
-        bottom: '20px', 
-        left: '50%', 
-        transform: 'translateX(-50%)',
-        backgroundColor: '#111420',
-        padding: '10px 20px',
-        borderRadius: '30px',
-        border: '1px solid #1e293b',
+        backgroundColor: 'var(--bg-card)',
+        padding: '8px 16px',
+        borderRadius: '20px',
+        border: '1px solid var(--border-color)',
         display: 'flex',
-        gap: '20px',
-        fontSize: '12px',
-        color: '#94a3b8'
+        justifyContent: 'center',
+        gap: '24px',
+        fontSize: '11px',
+        color: 'var(--text-secondary)',
+        margin: '10px auto 0 auto'
       }}>
-        <div><span style={{ color: 'white', fontWeight: 'bold' }}>C</span> Confirm</div>
-        <div><span style={{ color: 'white', fontWeight: 'bold' }}>R</span> Reject</div>
-        <div><span style={{ color: 'white', fontWeight: 'bold' }}>S</span> Search</div>
-        <div><span style={{ color: 'white', fontWeight: 'bold' }}>↑↓</span> Navigate</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span className="keycap">C</span> Approve</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span className="keycap">R</span> Reject</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span className="keycap">S</span> Search</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <span className="keycap"><ChevronUp size={12} /></span>
+          <span className="keycap"><ChevronDown size={12} /></span>
+          <span>Navigate</span>
+        </div>
       </div>
     </div>
   );

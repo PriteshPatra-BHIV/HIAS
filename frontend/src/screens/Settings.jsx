@@ -43,77 +43,77 @@ export default function Settings() {
     }
   };
 
-  if (loading) return <div style={{ padding: '20px', color: '#64748b' }}>Loading configurations...</div>;
+  if (loading) return <div style={{ color: 'var(--text-muted)', fontSize: '13px' }}>Loading system configurations...</div>;
 
   return (
-    <div style={{ padding: '20px', maxWidth: '800px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
+    <div style={{ maxWidth: '800px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h1 style={{ fontSize: '24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <SettingsIcon color="#ff3b8f" /> SYSTEM SETTINGS
+          <h1 style={{ fontSize: '20px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '10px', letterSpacing: '-0.01em' }}>
+            <SettingsIcon color="var(--accent-primary)" size={20} /> System Preferences & Engine Rules
           </h1>
-          <p style={{ color: '#94a3b8', fontSize: '14px' }}>Configure access rules and system behavior</p>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '13px', marginTop: '2px' }}>Configure deterministic rule checks, emergency bypass, and time windows</p>
         </div>
         <button 
           onClick={handleSave}
           disabled={saving}
-          style={{ backgroundColor: '#ff3b8f', color: 'white', border: 'none', padding: '10px 24px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '600', cursor: 'pointer', opacity: saving ? 0.7 : 1 }}
+          style={{ background: 'var(--accent-gradient)', color: 'white', border: 'none', padding: '8px 18px', borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '600', fontSize: '12px', cursor: 'pointer', opacity: saving ? 0.7 : 1, boxShadow: '0 2px 8px var(--accent-glow)' }}
         >
-          {saving ? <RefreshCcw size={18} className="spin" /> : <Save size={18} />}
+          {saving ? <RefreshCcw size={14} className="spin" /> : <Save size={14} />}
           SAVE CHANGES
         </button>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
         {/* Emergency Mode */}
-        <div className="card" style={{ border: settings.emergency_mode ? '1px solid #ef4444' : '1px solid #1e293b' }}>
+        <div className="card" style={{ border: settings.emergency_mode ? '1px solid var(--danger-border)' : '1px solid var(--border-color)', backgroundColor: settings.emergency_mode ? 'var(--danger-bg)' : 'var(--bg-card)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-              <div style={{ padding: '10px', borderRadius: '10px', backgroundColor: 'rgba(239, 68, 68, 0.1)' }}>
-                <ShieldAlert size={24} color="#ef4444" />
+            <div style={{ display: 'flex', gap: '14px', alignItems: 'center' }}>
+              <div style={{ padding: '8px', borderRadius: 'var(--radius-sm)', backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)' }}>
+                <ShieldAlert size={20} color={settings.emergency_mode ? 'var(--danger)' : 'var(--text-secondary)'} />
               </div>
               <div>
-                <h3 style={{ fontSize: '16px', marginBottom: '4px' }}>Emergency Bypass Mode</h3>
-                <p style={{ color: '#64748b', fontSize: '13px' }}>Force all gates to remain open and bypass authorization.</p>
+                <h3 style={{ fontSize: '14px', fontWeight: '600', marginBottom: '2px' }}>Emergency Bypass Protocol</h3>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '12px' }}>Force open all physical gate locks and bypass all ID verification checks.</p>
               </div>
             </div>
             <div 
               onClick={() => setSettings({...settings, emergency_mode: !settings.emergency_mode})}
-              style={{ width: '50px', height: '26px', backgroundColor: settings.emergency_mode ? '#ef4444' : '#1e293b', borderRadius: '13px', position: 'relative', cursor: 'pointer', transition: '0.3s' }}
+              style={{ width: '44px', height: '24px', backgroundColor: settings.emergency_mode ? 'var(--danger)' : 'var(--bg-input)', borderRadius: '12px', border: '1px solid var(--border-color)', position: 'relative', cursor: 'pointer', transition: '0.2s' }}
             >
-              <div style={{ width: '20px', height: '20px', backgroundColor: 'white', borderRadius: '50%', position: 'absolute', top: '3px', left: settings.emergency_mode ? '27px' : '3px', transition: '0.3s' }} />
+              <div style={{ width: '18px', height: '18px', backgroundColor: 'white', borderRadius: '50%', position: 'absolute', top: '2px', left: settings.emergency_mode ? '22px' : '2px', transition: '0.2s' }} />
             </div>
           </div>
         </div>
 
         {/* Access Windows */}
         <div className="card">
-          <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '24px' }}>
-            <div style={{ padding: '10px', borderRadius: '10px', backgroundColor: 'rgba(59, 130, 246, 0.1)' }}>
-              <Clock size={24} color="#3b82f6" />
+          <div style={{ display: 'flex', gap: '14px', alignItems: 'center', marginBottom: '20px' }}>
+            <div style={{ padding: '8px', borderRadius: 'var(--radius-sm)', backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)' }}>
+              <Clock size={20} color="var(--accent-primary)" />
             </div>
             <div>
-              <h3 style={{ fontSize: '16px', marginBottom: '4px' }}>General Access Window</h3>
-              <p style={{ color: '#64748b', fontSize: '13px' }}>Set the time range during which residents can scan in/out.</p>
+              <h3 style={{ fontSize: '14px', fontWeight: '600', marginBottom: '2px' }}>General Access Window</h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '12px' }}>Set allowed scan timeframe for general resident access.</p>
             </div>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             <div>
-              <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', marginBottom: '8px' }}>START TIME</label>
+              <label style={{ display: 'block', fontSize: '11px', fontWeight: '600', color: 'var(--text-muted)', letterSpacing: '0.05em', marginBottom: '6px' }}>START TIME</label>
               <input 
                 type="time" 
                 value={settings.access_window_start}
                 onChange={(e) => setSettings({...settings, access_window_start: e.target.value})}
-                style={{ width: '100%', backgroundColor: '#0a0c14', border: '1px solid #1e293b', borderRadius: '6px', padding: '12px', color: 'white' }}
+                style={{ width: '100%', padding: '10px 12px', fontSize: '13px' }}
               />
             </div>
             <div>
-              <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', marginBottom: '8px' }}>END TIME</label>
+              <label style={{ display: 'block', fontSize: '11px', fontWeight: '600', color: 'var(--text-muted)', letterSpacing: '0.05em', marginBottom: '6px' }}>END TIME</label>
               <input 
                 type="time" 
                 value={settings.access_window_end}
                 onChange={(e) => setSettings({...settings, access_window_end: e.target.value})}
-                style={{ width: '100%', backgroundColor: '#0a0c14', border: '1px solid #1e293b', borderRadius: '6px', padding: '12px', color: 'white' }}
+                style={{ width: '100%', padding: '10px 12px', fontSize: '13px' }}
               />
             </div>
           </div>
@@ -121,23 +121,23 @@ export default function Settings() {
 
         {/* System Behavior */}
         <div className="card">
-          <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '24px' }}>
-            <div style={{ padding: '10px', borderRadius: '10px', backgroundColor: 'rgba(168, 85, 247, 0.1)' }}>
-              <Bell size={24} color="#a855f7" />
+          <div style={{ display: 'flex', gap: '14px', alignItems: 'center', marginBottom: '16px' }}>
+            <div style={{ padding: '8px', borderRadius: 'var(--radius-sm)', backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)' }}>
+              <Bell size={20} color="var(--accent-cyan)" />
             </div>
             <div>
-              <h3 style={{ fontSize: '16px', marginBottom: '4px' }}>System Preferences</h3>
-              <p style={{ color: '#64748b', fontSize: '13px' }}>Adjust operational behavior of the controller core.</p>
+              <h3 style={{ fontSize: '14px', fontWeight: '600', marginBottom: '2px' }}>Human-in-the-loop Preferences</h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '12px' }}>Adjust verification queue thresholds for low-confidence scans.</p>
             </div>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '14px' }}>Require Admin Review for low-confidence matches</span>
+              <span style={{ fontSize: '13px', color: 'var(--text-primary)' }}>Require Admin Review for face match confidence under 80%</span>
               <input 
                 type="checkbox" 
                 checked={settings.require_admin_approval}
                 onChange={(e) => setSettings({...settings, require_admin_approval: e.target.checked})}
-                style={{ width: '20px', height: '20px', accentColor: '#ff3b8f' }}
+                style={{ width: '18px', height: '18px', accentColor: 'var(--accent-primary)', cursor: 'pointer' }}
               />
             </div>
           </div>

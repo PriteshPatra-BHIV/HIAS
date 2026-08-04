@@ -4,7 +4,7 @@ import {
   FileBarChart, Settings, User, Bell, Clock, Calendar,
   Activity, ShieldCheck, Database, CheckCircle2, Wifi, 
   Lock, ArrowUpRight, ArrowDownRight, Search, Filter, ChevronDown,
-  LogOut, Heart
+  Layers, Terminal, Command, ChevronUp
 } from 'lucide-react';
 import StatusBadge from './components/ui/StatusBadge';
 import { useEvents, EventProvider } from './context/EventContext';
@@ -19,52 +19,87 @@ import SettingsScreen from './screens/Settings';
 import { API_ENDPOINTS } from './api/config';
 
 function Sidebar({ activeTab, setActiveTab }) {
-  const menuItems = [
+  const { reviewItems } = useEvents();
+
+  const coreItems = [
     { id: 'dashboard', name: 'Dashboard', icon: LayoutDashboard },
-    { id: 'live', name: 'Live Monitor', icon: Monitor },
+    { id: 'live', name: 'Live Stream', icon: Monitor },
     { id: 'logs', name: 'Access Logs', icon: List },
+    { id: 'manual', name: 'Review Queue', icon: ShieldAlert, badge: reviewItems.length },
+  ];
+
+  const manageItems = [
     { id: 'users', name: 'Users', icon: Users },
     { id: 'devices', name: 'Devices', icon: Cpu },
-    { id: 'manual', name: 'Manual Override', icon: ShieldAlert },
-    { id: 'alerts', name: 'Alerts', icon: Bell },
-    { id: 'reports', name: 'Reports', icon: FileBarChart },
+    { id: 'alerts', name: 'Security Alerts', icon: Bell },
+    { id: 'reports', name: 'Analytics', icon: FileBarChart },
     { id: 'settings', name: 'Settings', icon: Settings },
   ];
 
   return (
     <div className="sidebar">
       <div className="sidebar-logo">
-        <div style={{ backgroundColor: '#d63384', padding: '8px', borderRadius: '8px' }}>
-          <ShieldAlert color="white" size={24} />
+        <div className="logo-badge">
+          <Layers color="white" size={16} />
         </div>
         <div>
-          <h2 style={{ fontSize: '18px', lineHeight: 1 }}>HIAS</h2>
-          <p style={{ fontSize: '10px', color: '#64748b' }}>Hostel Integrated Access System</p>
+          <h2 style={{ fontSize: '14px', fontWeight: '600', color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>HIAS Access</h2>
+          <p style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Control Console</p>
         </div>
       </div>
 
-      <nav style={{ display: 'flex', flexDirection: 'column' }}>
-        {menuItems.map((item) => (
-          <a 
-            key={item.id}
-            href="#" 
-            className={`nav-item ${activeTab === item.id ? 'active' : ''}`}
-            onClick={(e) => { e.preventDefault(); setActiveTab(item.id); }}
-          >
-            <item.icon size={20} />
-            {item.name}
-          </a>
-        ))}
+      <nav style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div>
+          <div style={{ fontSize: '10px', fontWeight: '600', color: 'var(--text-muted)', letterSpacing: '0.06em', padding: '0 8px 6px 8px', textTransform: 'uppercase' }}>Main</div>
+          {coreItems.map((item) => (
+            <a 
+              key={item.id}
+              href="#" 
+              className={`nav-item ${activeTab === item.id ? 'active' : ''}`}
+              onClick={(e) => { e.preventDefault(); setActiveTab(item.id); }}
+            >
+              <item.icon size={15} />
+              <span style={{ flex: 1 }}>{item.name}</span>
+              {item.badge > 0 && (
+                <span style={{ 
+                  backgroundColor: 'var(--warning)', 
+                  color: '#000', 
+                  fontSize: '10px', 
+                  fontWeight: '700', 
+                  padding: '1px 6px', 
+                  borderRadius: '10px',
+                  fontFamily: "'JetBrains Mono', monospace"
+                }}>
+                  {item.badge}
+                </span>
+              )}
+            </a>
+          ))}
+        </div>
+
+        <div>
+          <div style={{ fontSize: '10px', fontWeight: '600', color: 'var(--text-muted)', letterSpacing: '0.06em', padding: '0 8px 6px 8px', textTransform: 'uppercase' }}>Management</div>
+          {manageItems.map((item) => (
+            <a 
+              key={item.id}
+              href="#" 
+              className={`nav-item ${activeTab === item.id ? 'active' : ''}`}
+              onClick={(e) => { e.preventDefault(); setActiveTab(item.id); }}
+            >
+              <item.icon size={15} />
+              <span>{item.name}</span>
+            </a>
+          ))}
+        </div>
       </nav>
 
       <div className="sidebar-footer">
-        <div className="empowered-space">
-          <Heart size={48} color="#d63384" fill="#d63384" style={{ opacity: 0.3 }} />
-          <p>Empowered Space. <br/> Safe Place.</p>
-        </div>
-        <div className="system-time-card">
-          <p style={{ fontSize: '10px', color: '#64748b', marginBottom: '4px' }}>SYSTEM TIME</p>
-          <p style={{ fontSize: '12px', fontWeight: 'bold' }}>20 May 2025 | 10:30:45 AM</p>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '4px 8px', fontSize: '11px', color: 'var(--text-muted)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span className="live-dot" />
+            <span>Connected</span>
+          </div>
+          <span style={{ fontFamily: "'JetBrains Mono', monospace" }}>v1.0</span>
         </div>
       </div>
     </div>
@@ -77,57 +112,62 @@ function MainFeed() {
   return (
     <div className="feed-container">
       <div className="feed-header">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-          <h3 style={{ fontSize: '14px' }}>LIVE ACCESS FEED</h3>
-          <div className="live-indicator">
-            <div className="live-dot" />
-            <span>Live</span>
-          </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <h3 style={{ fontSize: '13px', fontWeight: '600' }}>Recent Access Activity</h3>
+          <span className="live-indicator">
+            <span className="live-dot" />
+            <span style={{ fontSize: '11px' }}>Live</span>
+          </span>
         </div>
+        <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontFamily: "'JetBrains Mono', monospace" }}>
+          {events.length} records
+        </span>
       </div>
 
       <table>
         <thead>
           <tr>
             <th>Time</th>
-            <th>Name</th>
-            <th>User ID</th>
+            <th>Subject</th>
+            <th>ID</th>
             <th>Direction</th>
             <th>Method</th>
-            <th>Gate / Booth</th>
+            <th>Device</th>
             <th>Status</th>
           </tr>
         </thead>
         <tbody>
           {events.length === 0 ? (
-            <tr><td colSpan="7" style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>Waiting for stream...</td></tr>
+            <tr><td colSpan="7" style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>No access events recorded yet.</td></tr>
           ) : (
             events.map((e, i) => (
               <tr key={i}>
-                <td style={{ color: '#94a3b8' }}>{new Date(e.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</td>
+                <td style={{ color: 'var(--text-muted)', fontFamily: "'JetBrains Mono', monospace", fontSize: '12px' }}>
+                  {new Date(e.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                </td>
                 <td>
                   <div className="subject-cell">
-                    <div className="avatar" />
-                    <span>{e.name}</span>
+                    <div className="avatar">
+                      {e.name?.charAt(0) || 'U'}
+                    </div>
+                    <span style={{ fontWeight: '500' }}>{e.name}</span>
                   </div>
                 </td>
-                <td style={{ color: '#94a3b8' }}>{e.user_id}</td>
+                <td style={{ color: 'var(--text-secondary)', fontFamily: "'JetBrains Mono', monospace" }}>{e.user_id}</td>
                 <td>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: e.direction === 'IN' ? '#22c55e' : '#ef4444' }}>
-                    {e.direction === 'IN' ? <ArrowUpRight size={16} /> : <ArrowDownRight size={16} />}
-                    <span style={{ fontWeight: 'bold' }}>{e.direction}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: e.direction === 'IN' ? 'var(--success)' : 'var(--danger)' }}>
+                    {e.direction === 'IN' ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
+                    <span style={{ fontWeight: '600', fontSize: '11px' }}>{e.direction}</span>
                   </div>
                 </td>
-                <td>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#94a3b8' }}>
-                    <Monitor size={14} /> {e.method}
+                <td style={{ color: 'var(--text-secondary)', fontSize: '12px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Monitor size={13} color="var(--text-muted)" /> {e.method}
                   </div>
                 </td>
-                <td style={{ color: '#94a3b8' }}>{e.device_id}</td>
+                <td style={{ color: 'var(--text-muted)', fontFamily: "'JetBrains Mono', monospace", fontSize: '12px' }}>{e.device_id}</td>
                 <td>
-                  <span className={`status-label ${e.decision === 'ALLOW' ? 'allowed' : 'denied'}`}>
-                    {e.decision === 'ALLOW' ? 'ALLOWED' : 'DENIED'}
-                  </span>
+                  <StatusBadge type={e.decision} />
                 </td>
               </tr>
             ))
@@ -153,8 +193,6 @@ function RightPanel() {
             face_devices: data.find(d => d.name.includes('Face'))?.status || 'Offline',
             rfid_readers: data.find(d => d.name.includes('RFID'))?.status || 'Offline',
             relay: data.find(d => d.name.includes('Relay'))?.status || 'Offline',
-            network: 'Online',
-            power_supply: 'Normal'
           };
           setDeviceStatus(mappedStatus);
         } else {
@@ -165,7 +203,7 @@ function RightPanel() {
       }
     };
     fetchStatus();
-    const interval = setInterval(fetchStatus, 10000); // Update every 10s
+    const interval = setInterval(fetchStatus, 10000);
     return () => clearInterval(interval);
   }, []);
 
@@ -176,88 +214,82 @@ function RightPanel() {
     overrides: events.filter(e => e.method === 'MANUAL').length,
   };
 
-
   const handleOverride = async () => {
-    if (!reason) return alert("Reason required for override");
+    if (!reason.trim()) return alert("Please enter a reason for manual override");
     await triggerOverride(reason);
     setReason('');
   };
 
   return (
     <div className="right-panel">
-      {/* System Status */}
+      {/* Quick Override */}
       <div className="panel-card">
         <div className="panel-title">
-          <Activity size={18} color="#d63384" /> SYSTEM STATUS
+          <ShieldAlert size={14} color="var(--accent-primary)" /> Manual Override
         </div>
-        {[
-          { name: 'Controller', val: connected ? 'Online' : 'Offline' },
-          { name: 'Face Devices', val: deviceStatus?.face_devices || 'Connecting...' },
-          { name: 'RFID Readers', val: deviceStatus?.rfid_readers || 'Connecting...' },
-          { name: 'Relay / Door Locks', val: deviceStatus?.relay || 'Connecting...' },
-          { name: 'Network', val: deviceStatus?.network || 'Online' },
-          { name: 'Power Supply', val: deviceStatus?.power_supply || 'Normal' },
-        ].map((s, i) => (
-          <div key={i} className="status-row">
-            <span style={{ color: '#94a3b8' }}>{s.name}</span>
-            <div className="status-value">
-              <span>{s.val}</span>
-              <div className="dot-online" style={{ backgroundColor: s.val.includes('Online') || s.val === 'All OK' || s.val === 'Normal' || s.val === 'Healthy' || s.val === 'Simulation Mode' ? '#22c55e' : '#dc3545' }} />
-            </div>
-          </div>
-        ))}
-
-      </div>
-
-      {/* Manual Override */}
-      <div className="panel-card">
-        <div className="panel-title">
-          <ShieldAlert size={18} color="#d63384" /> MANUAL OVERRIDE
-        </div>
-        <p style={{ fontSize: '11px', color: '#94a3b8', marginBottom: '16px' }}>Use only in emergency or authorized situations.</p>
         <button className="btn-open-gate" onClick={handleOverride}>
-          <Lock size={16} /> OPEN GATE
+          <Lock size={14} /> Open Gate
         </button>
-        <div style={{ marginTop: '16px' }}>
-          <p style={{ fontSize: '11px', color: '#94a3b8', marginBottom: '8px' }}>Reason (Required)</p>
+        <div style={{ marginTop: '10px' }}>
           <input 
             type="text"
             value={reason}
             onChange={(e) => setReason(e.target.value)}
-            placeholder="Enter reason"
-            style={{ width: '100%', backgroundColor: '#0a0c14', border: '1px solid #1e293b', borderRadius: '6px', padding: '10px', color: 'white', fontSize: '12px' }}
+            placeholder="Reason (e.g. Visitor entry)"
+            style={{ width: '100%', padding: '7px 10px', fontSize: '12px' }}
           />
         </div>
       </div>
 
-      {/* Today Summary */}
+      {/* Device Health Overview */}
       <div className="panel-card">
         <div className="panel-title">
-          <FileBarChart size={18} color="#d63384" /> TODAY SUMMARY
+          <Activity size={14} color="var(--accent-primary)" /> Hardware Status
+        </div>
+        {[
+          { name: 'Controller', val: connected ? 'Online' : 'Offline' },
+          { name: 'Face Scanners', val: deviceStatus?.face_devices || 'Offline' },
+          { name: 'RFID Readers', val: deviceStatus?.rfid_readers || 'Offline' },
+          { name: 'Gate Relays', val: deviceStatus?.relay || 'Offline' },
+        ].map((s, i) => (
+          <div key={i} className="status-row">
+            <span style={{ color: 'var(--text-secondary)' }}>{s.name}</span>
+            <div className="status-value">
+              <span style={{ fontSize: '11px', color: 'var(--text-primary)' }}>{s.val}</span>
+              <div className="dot-online" style={{ backgroundColor: s.val.includes('Online') || s.val === 'Healthy' || s.val === 'Simulated' ? 'var(--success)' : 'var(--danger)' }} />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Access Summary */}
+      <div className="panel-card">
+        <div className="panel-title">
+          <FileBarChart size={14} color="var(--accent-primary)" /> Today Summary
         </div>
         <div className="summary-grid">
           <div className="summary-card">
             <h4>GRANTED</h4>
-            <p style={{ color: '#22c55e' }}>{stats.granted.toLocaleString()}</p>
+            <p style={{ color: 'var(--success)' }}>{stats.granted}</p>
           </div>
           <div className="summary-card">
             <h4>DENIED</h4>
-            <p style={{ color: '#ef4444' }}>{stats.denied.toLocaleString()}</p>
+            <p style={{ color: 'var(--danger)' }}>{stats.denied}</p>
           </div>
           <div className="summary-card">
-            <h4>OVERRIDES</h4>
-            <p style={{ color: '#eab308' }}>{stats.overrides.toLocaleString()}</p>
+            <h4>MANUAL</h4>
+            <p style={{ color: 'var(--warning)' }}>{stats.overrides}</p>
           </div>
           <div className="summary-card">
             <h4>TOTAL</h4>
-            <p>{stats.total.toLocaleString()}</p>
+            <p>{stats.total}</p>
           </div>
         </div>
         <button 
           onClick={triggerSimulation}
-          style={{ width: '100%', marginTop: '16px', backgroundColor: '#1e293b', border: 'none', color: '#94a3b8', padding: '8px', borderRadius: '6px', fontSize: '11px', cursor: 'pointer' }}
+          style={{ width: '100%', marginTop: '10px', backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', color: 'var(--text-secondary)', padding: '7px', borderRadius: 'var(--radius-sm)', fontSize: '11px', fontWeight: '500', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
         >
-          [DEV] SIMULATE ACCESS EVENT
+          <Terminal size={12} color="var(--text-muted)" /> Simulate Access Event
         </button>
       </div>
     </div>
@@ -268,7 +300,12 @@ function AppContent() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [searchResults, setSearchResults] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const { connected } = useEvents();
+  const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString());
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date().toLocaleTimeString()), 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -294,12 +331,7 @@ function AppContent() {
       case 'devices':
         return <SystemStatus />;
       default:
-        return (
-          <div style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>
-            <h2>Module Under Construction</h2>
-            <p>The {activeTab} module is currently being integrated by the team.</p>
-          </div>
-        );
+        return <DashboardScreen />;
     }
   };
 
@@ -309,30 +341,50 @@ function AppContent() {
         <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
         
         <main className="main-area">
+          {/* Top Bar Header with Integrated Search */}
           <header className="header">
-            <div className="header-welcome">
-              <h1>Welcome, Administrator <ShieldCheck size={18} color="#22c55e" /></h1>
-              <p style={{ fontSize: '12px', color: '#94a3b8' }}>Girls Only Hostel Access Console</p>
-            </div>
-            
-            <div className="safe-secure-badge">
-              <Heart size={16} fill="#d63384" color="#d63384" />
-              <span>Safe. Secure. For Her.</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: 1, maxWidth: '480px' }}>
+              <div style={{ position: 'relative', width: '100%' }}>
+                <Search size={14} color="var(--text-muted)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
+                <input 
+                  type="text" 
+                  placeholder="Search residents or IDs... (e.g. S001)" 
+                  onChange={async (e) => {
+                    const q = e.target.value;
+                    if (q.length > 1) {
+                      const res = await fetch(`${API_ENDPOINTS.USERS_SEARCH}?q=${q}`);
+                      const data = await res.json();
+                      setSearchResults(data);
+                    } else {
+                      setSearchResults([]);
+                    }
+                  }}
+                  style={{ width: '100%', padding: '6px 12px 6px 32px', fontSize: '12px', borderRadius: 'var(--radius-sm)' }}
+                />
+                
+                {searchResults.length > 0 && (
+                  <div style={{ position: 'absolute', top: '100%', left: 0, width: '100%', backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)', marginTop: '4px', zIndex: 100, boxShadow: '0 8px 24px rgba(0,0,0,0.5)' }}>
+                    {searchResults.map((user, i) => (
+                      <div key={i} style={{ padding: '8px 12px', borderBottom: i < searchResults.length - 1 ? '1px solid var(--border-subtle)' : 'none', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
+                        <span>{user.name}</span>
+                        <span style={{ color: 'var(--text-muted)', fontFamily: "'JetBrains Mono', monospace" }}>{user.user_id}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="top-actions">
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Calendar size={16} color="#94a3b8" />
-                <div style={{ fontSize: '12px' }}>
-                  <p style={{ fontWeight: 'bold' }}>20 May 2025</p>
-                  <p style={{ color: '#94a3b8' }}>10:30:45 AM</p>
-                </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: 'var(--text-muted)', fontFamily: "'JetBrains Mono', monospace" }}>
+                <Clock size={13} />
+                <span>{currentTime}</span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', borderLeft: '1px solid #1e293b', paddingLeft: '20px' }}>
-                <div style={{ width: 32, height: 32, borderRadius: '50%', backgroundColor: '#d63384', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <User size={18} color="white" />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', borderLeft: '1px solid var(--border-color)', paddingLeft: '14px' }}>
+                <div style={{ width: 24, height: 24, borderRadius: '50%', backgroundColor: 'var(--accent-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <User size={13} color="white" />
                 </div>
-                <span style={{ fontSize: '13px' }}>Administrator <ChevronDown size={14} /></span>
+                <span style={{ fontSize: '12px', fontWeight: '500' }}>Admin</span>
               </div>
             </div>
           </header>
@@ -340,51 +392,17 @@ function AppContent() {
           <div style={{ flex: 1, overflowY: 'auto' }}>
             {renderContent()}
           </div>
-
-          <div style={{ display: 'flex', gap: '20px', alignItems: 'center', backgroundColor: '#121826', padding: '16px', borderRadius: '12px', border: '1px solid #1e293b', marginTop: '20px', position: 'relative' }}>
-            <div style={{ fontSize: '14px', fontWeight: 'bold' }}>SEARCH USER</div>
-            <div style={{ flex: 1, position: 'relative' }}>
-              <input 
-                type="text" 
-                placeholder="Search by Name or User ID..." 
-                onChange={async (e) => {
-                  const q = e.target.value;
-                  if (q.length > 1) {
-                    const res = await fetch(`${API_ENDPOINTS.USERS_SEARCH}?q=${q}`);
-                    const data = await res.json();
-                    setSearchResults(data);
-                  } else {
-                    setSearchResults([]);
-                  }
-                }}
-                style={{ width: '100%', backgroundColor: '#0a0c14', border: '1px solid #1e293b', padding: '10px 40px 10px 12px', borderRadius: '6px', color: 'white', fontSize: '13px' }}
-              />
-              <Search size={18} color="#64748b" style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)' }} />
-              
-              {searchResults.length > 0 && (
-                <div style={{ position: 'absolute', bottom: '100%', left: 0, width: '100%', backgroundColor: '#0a0c14', border: '1px solid #1e293b', borderRadius: '6px', marginBottom: '8px', zIndex: 100 }}>
-                  {searchResults.map((user, i) => (
-                    <div key={i} style={{ padding: '10px', borderBottom: i < searchResults.length - 1 ? '1px solid #1e293b' : 'none', cursor: 'pointer', display: 'flex', justifyContent: 'space-between' }}>
-                      <span>{user.name}</span>
-                      <span style={{ color: '#64748b' }}>{user.user_id}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-
         </main>
 
         <RightPanel />
       </div>
 
       <footer className="layout-footer">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <ShieldCheck size={14} />
-          HIAS - Securing Her Space, Every Day.
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <ShieldCheck size={13} color="var(--accent-primary)" />
+          HIAS — Hostel Access Control System
         </div>
-        <div>v1.0.0</div>
+        <div style={{ fontFamily: "'JetBrains Mono', monospace" }}>v1.0.0</div>
       </footer>
     </div>
   );

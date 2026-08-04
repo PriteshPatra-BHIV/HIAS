@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { BarChart3, Download, PieChart, TrendingUp, Calendar, FileText } from 'lucide-react';
+import { BarChart3, Download, PieChart, TrendingUp, Calendar } from 'lucide-react';
 import { API_ENDPOINTS } from '../api/config';
 
 export default function Reports() {
@@ -25,71 +25,71 @@ export default function Reports() {
     window.open(API_ENDPOINTS.REPORTS_EXPORT, '_blank');
   };
 
-  if (loading) return <div style={{ padding: '20px', color: '#64748b' }}>Generating analytics...</div>;
+  if (loading) return <div style={{ color: 'var(--text-muted)', fontSize: '13px' }}>Generating telemetry analytics...</div>;
 
   return (
-    <div style={{ padding: '20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h1 style={{ fontSize: '24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <BarChart3 color="#ff3b8f" /> ANALYTICS & REPORTS
+          <h1 style={{ fontSize: '20px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '10px', letterSpacing: '-0.01em' }}>
+            <BarChart3 color="var(--accent-primary)" size={20} /> Analytics & Data Reports
           </h1>
-          <p style={{ color: '#94a3b8', fontSize: '14px' }}>Detailed access patterns and data exports</p>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '13px', marginTop: '2px' }}>Access decision split, authentication methods, and raw CSV log exporter</p>
         </div>
-        <div style={{ display: 'flex', gap: '12px' }}>
-          <button style={{ backgroundColor: '#1e293b', color: 'white', border: '1px solid #334155', padding: '10px 20px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', cursor: 'pointer' }}>
-            <Calendar size={18} /> LAST 24 HOURS
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button style={{ backgroundColor: 'var(--bg-input)', color: 'var(--text-secondary)', border: '1px solid var(--border-color)', padding: '8px 14px', borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: '500' }}>
+            <Calendar size={14} color="var(--text-muted)" /> LAST 24 HOURS
           </button>
           <button 
             onClick={handleExport}
-            style={{ backgroundColor: '#ff3b8f', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '600', cursor: 'pointer' }}
+            style={{ background: 'var(--accent-gradient)', color: 'white', border: 'none', padding: '8px 16px', borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '600', fontSize: '12px', cursor: 'pointer', boxShadow: '0 2px 8px var(--accent-glow)' }}
           >
-            <Download size={18} /> EXPORT CSV
+            <Download size={14} /> EXPORT AUDIT LOGS (.CSV)
           </button>
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
         {/* Access Distribution */}
         <div className="card">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
-            <PieChart size={20} color="#ff3b8f" />
-            <h3 style={{ fontSize: '16px' }}>DECISION SPLIT</h3>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+            <PieChart size={16} color="var(--accent-primary)" />
+            <h3 style={{ fontSize: '13px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)' }}>DECISION SPLIT</h3>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center', height: '150px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center', height: '120px' }}>
              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#22c55e' }}>{stats.decision_split.allowed}</div>
-                <div style={{ fontSize: '12px', color: '#64748b' }}>GRANTED</div>
+                <div style={{ fontSize: '28px', fontWeight: '700', color: 'var(--success)', fontFamily: "'JetBrains Mono', monospace" }}>{stats.decision_split.allowed}</div>
+                <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '600', letterSpacing: '0.05em', marginTop: '4px' }}>GRANTED</div>
              </div>
-             <div style={{ width: '2px', height: '40px', backgroundColor: '#1e293b' }} />
+             <div style={{ width: '1px', height: '40px', backgroundColor: 'var(--border-color)' }} />
              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#ef4444' }}>{stats.decision_split.denied}</div>
-                <div style={{ fontSize: '12px', color: '#64748b' }}>DENIED</div>
+                <div style={{ fontSize: '28px', fontWeight: '700', color: 'var(--danger)', fontFamily: "'JetBrains Mono', monospace" }}>{stats.decision_split.denied}</div>
+                <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '600', letterSpacing: '0.05em', marginTop: '4px' }}>DENIED</div>
              </div>
           </div>
         </div>
 
         {/* Method Distribution */}
         <div className="card">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
-            <TrendingUp size={20} color="#ff3b8f" />
-            <h3 style={{ fontSize: '16px' }}>AUTHENTICATION METHODS</h3>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+            <TrendingUp size={16} color="var(--accent-primary)" />
+            <h3 style={{ fontSize: '13px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)' }}>AUTHENTICATION METHODS</h3>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {[
-              { label: 'RFID SCAN', value: stats.method_split.rfid, color: '#3b82f6' },
-              { label: 'FACE RECOGNITION', value: stats.method_split.face, color: '#a855f7' },
-              { label: 'MANUAL OVERRIDE', value: stats.method_split.manual, color: '#eab308' },
+              { label: 'RFID SCANNER', value: stats.method_split.rfid, color: '#38bdf8' },
+              { label: 'FACE RECOGNITION', value: stats.method_split.face, color: '#5e6ad2' },
+              { label: 'MANUAL OVERRIDE', value: stats.method_split.manual, color: '#f59e0b' },
             ].map((m, i) => {
               const total = stats.method_split.rfid + stats.method_split.face + stats.method_split.manual || 1;
               const percent = (m.value / total) * 100;
               return (
                 <div key={i}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '6px' }}>
-                    <span style={{ color: '#94a3b8' }}>{m.label}</span>
-                    <span style={{ fontWeight: 'bold' }}>{m.value}</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', marginBottom: '4px' }}>
+                    <span style={{ color: 'var(--text-secondary)' }}>{m.label}</span>
+                    <span style={{ fontWeight: '600', fontFamily: "'JetBrains Mono', monospace" }}>{m.value} ({percent.toFixed(0)}%)</span>
                   </div>
-                  <div style={{ height: '6px', backgroundColor: '#0a0c14', borderRadius: '3px', overflow: 'hidden' }}>
+                  <div style={{ height: '4px', backgroundColor: 'var(--bg-input)', borderRadius: '2px', overflow: 'hidden', border: '1px solid var(--border-subtle)' }}>
                     <div style={{ width: `${percent}%`, height: '100%', backgroundColor: m.color }} />
                   </div>
                 </div>
@@ -101,18 +101,24 @@ export default function Reports() {
 
       {/* Hourly Pattern */}
       <div className="card">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
-          <TrendingUp size={20} color="#ff3b8f" />
-          <h3 style={{ fontSize: '16px' }}>HOURLY ACCESS DENSITY</h3>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+          <TrendingUp size={16} color="var(--accent-primary)" />
+          <h3 style={{ fontSize: '13px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)' }}>HOURLY SCAN DENSITY (24-HOUR CYCLES)</h3>
         </div>
-        <div style={{ display: 'flex', alignItems: 'flex-end', height: '200px', gap: '4px', paddingBottom: '20px' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-end', height: '160px', gap: '4px', paddingBottom: '10px' }}>
           {stats.hourly_distribution.map((val, i) => {
             const max = Math.max(...stats.hourly_distribution) || 1;
-            const height = (val / max) * 100;
+            const height = Math.max((val / max) * 100, 3);
             return (
-              <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                <div style={{ width: '100%', height: `${height}%`, backgroundColor: '#ff3b8f20', borderTop: '2px solid #ff3b8f', borderRadius: '2px 2px 0 0' }} />
-                <span style={{ fontSize: '9px', color: '#475569' }}>{i}h</span>
+              <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                <div style={{ 
+                  width: '100%', 
+                  height: `${height}%`, 
+                  backgroundColor: val > 0 ? 'var(--accent-primary)' : 'var(--bg-input)', 
+                  borderRadius: '2px 2px 0 0',
+                  boxShadow: val > 0 ? '0 0 6px var(--accent-glow)' : 'none'
+                }} />
+                <span style={{ fontSize: '9px', color: 'var(--text-muted)', fontFamily: "'JetBrains Mono', monospace" }}>{i}h</span>
               </div>
             );
           })}
